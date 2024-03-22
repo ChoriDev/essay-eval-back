@@ -4,4 +4,4 @@ class Essay(models.Model):
     essayContent = models.CharField(max_length=1000)
 
 class Feedback(models.Model):
-    feedbackContent = models.CharField
+    feedbackContent = models.TextField(default="")
