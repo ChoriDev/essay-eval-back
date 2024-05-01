@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from app.serializers import EssaySerializer
+from hanspell import spell_checker
 
 # 에세이 평가 관련 API
 class Evaluator(APIView):
@@ -13,7 +14,13 @@ class Evaluator(APIView):
         data = request.data.copy()
         # 클라이언트에서 보낸 에세이
         essay = data.get('content')
-        data['feedback'] = 'great'
+
+        # TODO py-hanspell 관련 코드 작성
+        spelled_text = spell_checker.check(essay).as_dict
+        print(spelled_text)
+
+        # TODO 예시로 클라이언트에 문자열 hello 리턴
+        data['feedback'] = 'hello'
 
         serializer = EssaySerializer(data=data)
         if serializer.is_valid():
