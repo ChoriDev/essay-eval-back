@@ -4,30 +4,30 @@ from rest_framework.views import APIView
 from rest_framework import status
 from app.serializers import EssaySerializer
 from hanspell import spell_checker
+from app.splitter import text_splitter
 
 # 에세이 평가 관련 API
 class Evaluator(APIView):
-    # POST 요청 테스트
     def post(self, request):
-
         # 클라이언트가 보낸 데이터
-        # QueryDict(request.data)은 immutable여서 딕셔너리로 copy
         data = request.data.copy()
-        # 클라이언트에서 보낸 에세이
         essay = data.get('original_text')
+
+        if not essay:
+            return Response({'error': '에세이가 전송되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # py-hanspell 관련 코드
         total_length = len(essay)
-        paragraph = []
-        # TODO 하나의 단어가 나뉠 수 있음, 해결 방법 모색
-        if total_length > 0 and total_length <= 500:
-            paragraph.append(essay)
-        elif total_length > 500 and total_length <= 1000:
-            split_length = 500
-            paragraph.extend([essay[i:i + split_length] for i in range(0, total_length , split_length)])
-        else:
-            return HttpResponse(status=400)
+        if total_length == 0:
+            return Response({'error': '에세이를 작성해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        if total_length > 1000:
+            return Response({'error': '1000자 이내로 작성해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 텍스트 분할
+        # TODO 에러 발생 가능성 있음, 길이 제한을 500자보다 여유롭게 설정
+        paragraph = text_splitter(essay, max_len=400)
+
         # 잘못된 맞춤법과 띄어쓰기 단어 리스트
         wrong_spelling = []
         wrong_spacing = []
@@ -37,20 +37,19 @@ class Evaluator(APIView):
             spelled_text = spell_checker.check(text)
             corrected_text += spelled_text.checked + ' '
             words = spelled_text.words
-            # TODO 리스트에 중복된 내용이 포함될 수 있음
             for key, value in words.items():
                 if value == 1:
                     wrong_spelling.append(key)
                 elif value == 2:
                     wrong_spacing.append(key)
-        
-        print(corrected_text)
-        print(wrong_spelling)
-        print(wrong_spacing)
 
-        data['corrected_text'] = corrected_text
-        data['wrong_spelling'] = wrong_spelling
-        data['wrong_spacing'] = wrong_spacing
+        # 딕셔너리로 변환하여 중복 제거
+        wrong_spelling_dict = dict.fromkeys(wrong_spelling)
+        wrong_spacing_dict = dict.fromkeys(wrong_spacing)
+
+        data['corrected_text'] = corrected_text.strip()
+        data['wrong_spelling'] = list(wrong_spelling_dict)
+        data['wrong_spacing'] = list(wrong_spacing_dict)
 
         serializer = EssaySerializer(data=data)
         if serializer.is_valid():
