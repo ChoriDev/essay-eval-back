@@ -47,8 +47,8 @@ def check(text):
 
     # TODO passportKey, _callback 값은 바뀔 수 있음. 네이버 맞춤법 검사기 페이지의 개발자 도구에서 직접 확인
     payload = {
-        'passportKey': '4181eddd21f352d39304deefefbbb7353443323b',
-        '_callback': 'jQuery112408540925799648489_1716208786814',
+        'passportKey': '6bceb69d472c07bc1dbaf12cfbc74355e0a0cde3',
+        '_callback': 'jQuery1124036833502257832706_1718869908503',
         'color_blindness': '0',
         'q': text
     }
