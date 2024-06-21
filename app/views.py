@@ -4,13 +4,12 @@ from rest_framework.views import APIView
 from rest_framework import status
 from app.serializers import EssaySerializer
 from hanspell import spell_checker
-from app.splitter import split_by_up_to_400_characters, split_by_512_tokens
+from app.splitter import TextSplitter
 from app.evaluator import BertEvaluator
 
 # 모델 파일 경로 설정
 base_dir = os.path.dirname(__file__)
 model_files = {
-    # TODO 각 모델에 맞는 경로 설정
     "cont1": os.path.join(base_dir, "models/org3_model.pth"),
     "cont2": os.path.join(base_dir, "models/org3_model.pth"),
     "exp2": os.path.join(base_dir, "models/org3_model.pth"),
@@ -36,8 +35,9 @@ class Evaluator(APIView):
             return Response({'error': '1000자 이내로 작성해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 텍스트 분할
-        splitted_by_400_characters_chunks = split_by_up_to_400_characters(essay_content)
-        splitted_by_512_tokens_chunks = split_by_512_tokens(essay_content)
+        text_splitter = TextSplitter()
+        splitted_by_400_characters_chunks = text_splitter.split_by_up_to_400_characters(essay_content)
+        splitted_by_512_tokens_chunks = text_splitter.split_by_512_tokens(essay_content)
 
         # py-hanspell 관련 코드
         wrong_spelling = []
@@ -62,7 +62,7 @@ class Evaluator(APIView):
 
         # 모델 평가
         for model_name, model_path in model_files.items():
-            evaluator = BertEvaluator(model_path)
+            evaluator = BertEvaluator(model_name, model_path)
             feedback_results[model_name] = evaluator.feedback(splitted_by_512_tokens_chunks)
 
         # 결과 데이터에 추가
