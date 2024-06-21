@@ -5,15 +5,16 @@ from rest_framework import status
 from app.serializers import EssaySerializer
 from hanspell import spell_checker
 from app.splitter import split_by_up_to_400_characters, split_by_512_tokens
-from evaluator import BertEvaluator
+from app.evaluator import BertEvaluator
 
 # 모델 파일 경로 설정
 base_dir = os.path.dirname(__file__)
 model_files = {
-    "cont1": os.path.join(base_dir, "models/cont1_model.pth"),
-    "cont2": os.path.join(base_dir, "models/cont2_model.pth"),
-    "exp2": os.path.join(base_dir, "models/exp2_model.pth"),
-    "exp3": os.path.join(base_dir, "models/exp3_model.pth"),
+    # TODO 각 모델에 맞는 경로 설정
+    "cont1": os.path.join(base_dir, "models/org3_model.pth"),
+    "cont2": os.path.join(base_dir, "models/org3_model.pth"),
+    "exp2": os.path.join(base_dir, "models/org3_model.pth"),
+    "exp3": os.path.join(base_dir, "models/org3_model.pth"),
     "org3": os.path.join(base_dir, "models/org3_model.pth")
 }
 
