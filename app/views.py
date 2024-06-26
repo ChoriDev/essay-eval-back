@@ -10,10 +10,10 @@ from app.evaluator import BertEvaluator
 # 모델 파일 경로 설정
 base_dir = os.path.dirname(__file__)
 model_files = {
-    "cont1": os.path.join(base_dir, "models/org3_model.pth"),
-    "cont2": os.path.join(base_dir, "models/org3_model.pth"),
-    "exp2": os.path.join(base_dir, "models/org3_model.pth"),
-    "exp3": os.path.join(base_dir, "models/org3_model.pth"),
+    "cont1": os.path.join(base_dir, "models/cont1_model.pth"),
+    "cont2": os.path.join(base_dir, "models/cont2_model.pth"),
+    "exp2": os.path.join(base_dir, "models/exp2_model.pth"),
+    "exp3": os.path.join(base_dir, "models/exp3_model.pth"),
     "org3": os.path.join(base_dir, "models/org3_model.pth")
 }
 
